@@ -1,0 +1,22 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "chinook",
+            "database": "${workspaceFolder:04_SQL시작하기}/C:\\yeardreamschool6th\\2주차\\04_SQL시작하기"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "chinook",
+            "database": "\"C:\\yeardreamschool6th\\2주차\\datasets\\chinook.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "chinook",
+            "database": "C:\\yeardreamschool6th\\2주차\\datasets\\chinook.db"
+        }
+    ]
+}
