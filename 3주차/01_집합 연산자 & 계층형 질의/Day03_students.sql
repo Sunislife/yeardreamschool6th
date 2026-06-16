@@ -55,11 +55,22 @@
 
 -- (a) 전체 트랙 수
 -- ref: https://www.sqlitetutorial.net/sqlite-aggregate-functions/
+SELECT COUNT(*) AS 전체트랙수
+FROM tracks;
 
 -- (b) 앨범별 트랙 수 (내림차순)
-
+SELECT AlbumId,
+       COUNT(TrackId) AS track_count
+FROM tracks
+GROUP BY AlbumId
+ORDER BY track_count DESC;
 
 -- (c) 국가별 고객 수
+SELECT Country,
+       COUNT(CustomerId) AS 고객수
+FROM customers
+GROUP BY Country
+ORDER BY 고객수 DESC;
 
 -- (d) DISTINCT - 중복 제거 후 COUNT
 --     실제 청구서가 발생한 고유 고객 수
@@ -79,7 +90,7 @@ FROM invoices;
 -- (b) 연도별 총 매출
 SELECT 
     strftime('%Y', InvoiceDate) AS 연도
-    , ROUND(SUM(Total),1) AS 합계
+    , ROUND(SUM(Total),2) AS 합계
 FROM invoices
 GROUP BY 연도
 ;

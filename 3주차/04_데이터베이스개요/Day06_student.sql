@@ -17,13 +17,20 @@
 -- 반드시 FK(외래키) 참조 관계의 '자식' 테이블부터 삭제해야 에러가 발생하지 않습니다.
 -- 테이블 삭제는 맨 마지막에 실행합니다.
 
+DROP TABLE IF EXISTS enrollment;
+-- DROP TABLE IF EXISTS classroom; (예제 13 이후)
+DROP TABLE IF EXISTS course;
+DROP TABLE IF EXISTS student;
+DROP TABLE IF EXISTS professor;
+DROP TABLE IF EXISTS department;
+
 PRAGMA foreign_keys = ON; -- 외래키 활성화 (반드시 최상단에 선언)
 
 -- ============================================================
 -- [학과 테이블] department: 학과별 코드, 이름, 위치 저장
 CREATE TABLE department (
     dept_id     VARCHAR(10) PRIMARY KEY, -- 기본키
-    dep_name    VARCHAR(50) NOT NULL,    -- NULL 미 허용
+    dept_name    VARCHAR(50) NOT NULL,    -- NULL 미 허용
     location    VARCHAR(50) DEFAULT '미정' -- 기본값 미정
 );
 
@@ -46,13 +53,12 @@ CREATE TABLE student (
     student_id VARCHAR(10) PRIMARY KEY,
     name       VARCHAR(20) NOT NULL,
     email      VARCHAR(50) UNIQUE,
-    birth_year INT CHECK (birth_year >= 1990 AND birth_year <= 2007),
+    birth_year INT CHECK (birth_year >= 1990 AND birth_year <= 2010),
     dept_id    VARCHAR(10),
     grade      INT CHECK (grade >= 1 AND grade <= 4),
     tuition_paid VARCHAR(1) DEFAULT 'N',
     FOREIGN KEY (dept_id) REFERENCES department(dept_id)
-)
-;
+);
 
 
 -- ============================================================
@@ -61,12 +67,11 @@ CREATE TABLE student (
 CREATE TABLE course (
     course_id   VARCHAR(10) PRIMARY KEY,
     title       VARCHAR(100) NOT NULL,
-    credit      INT NOT NULL CHECK(credit >=1 AND credit <= 3),
+    credit      INT          NOT NULL CHECK(credit >=1 AND credit <= 3),
     prof_id     VARCHAR(10),
-    max_students INT DEFAULT 30,
+    max_students INT        DEFAULT 30,
     FOREIGN KEY (prof_id) REFERENCES professor(prof_id)
-)
-;
+);
 
 
 -- ============================================================
@@ -80,17 +85,34 @@ CREATE TABLE enrollment (
     CONSTRAINT enrollment_pk PRIMARY KEY (student_id, course_id),
     FOREIGN KEY (student_id) REFERENCES student(student_id),
     FOREIGN KEY (course_id)  REFERENCES course(course_id)
-)
-;
+);
 
+-- 커밋 : 수정, 삭제, 갱신 등 작업이 완료되면 DB에 최종 반영
+-- COMMIT;
 -- ============================================================
 -- 예제 01: NOT NULL 제약 시연 - 필수 입력 값
+INSERT INTO department (dept_id, dept_name, location)
+VALUES
+    ('CSE', '컴퓨터공학과', '공학관 3층'), -- 정상
+    ('MATH', '수학과', '미정')
+; -- 정상
+
+SELECT * FROM department;
 
 -- ============================================================
 -- 예제 02: NOT NULL 위반 시 에러 발생 확인
 
+INSERT INTO department (dept_id, location)
+VALUES ('ART', '예술관 1층');
+
 -- ============================================================
 -- 예제 03: UNIQUE 제약 시연 - 중복 이메일 금지
+
+INSERT INTO professor (prof_id, name, email, dept_id, hire_year)
+VALUES
+    ('P001', '김민준', 'minjun@school.ac.kr',  'CSE',  2005),
+    ('P002', '이서연', 'seoyeon@school.ac.kr', 'ENG',  2010),
+    ('P003', '박도현', 'dohyeon@school.ac.kr', 'MATH', 1998);
 
 -- ============================================================
 -- 예제 04: UNIQUE 제약 위반 시 에러 발생 확인
@@ -106,8 +128,21 @@ CREATE TABLE enrollment (
 -- ============================================================
 -- 예제 07: CHECK 제약 - 교수 임용 연도 1980년 이상만 가능
 
+INSERT INTO professor (prof_id, name, email, dept_id, hire_year)
+VALUES ('P099', '올바른교수', 'okay@school.ac.kr', 'CSE', 2005);
+
 -- ============================================================
 -- 예제 08: 학생 데이터 삽입
+
+INSERT INTO student (student_id, name, email, birth_year, dept_id, grade, tuition_paid)
+VALUES
+    ('S2021001', '정하은', 'haeun@mail.com',  2002, 'CSE',  2, 'N'),
+    ('S2021002', '윤재원', 'jaewon@mail.com', 2001, 'ENG',  3, 'N'),
+    ('S2022001', '송지민', 'jimin@mail.com',  2003, 'MATH', 1, 'N'),
+    ('S2020001', '한수빈', 'subin@mail.com',  2000, 'CSE',  4, 'N'),
+    ('S2022002', '임태양', NULL,              2003, 'ENG',  1, 'N');
+
+SELECT * FROM professor;
 
 -- ============================================================
 -- 예제 09: CHECK 제약 위반 - 학년(grade)
@@ -117,6 +152,11 @@ CREATE TABLE enrollment (
 
 -- ============================================================
 -- 예제 11: FOREIGN KEY 제약 위반 - 없는 학과 참조
+
+INSERT INTO student (student_id, name, birth_year, dept_id, grade)
+VALUES ('S9998', '유령학생', 2002, 'GHOST', 1);
+
+SELECT * FROM student;
 
 -- ============================================================
 -- 예제 12: 복합 PRIMARY KEY (Composite Key)
