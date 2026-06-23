@@ -30,5 +30,6 @@
             "name": "school_db",
             "database": "${workspaceFolder:yeardreamschool6th}/datasets/school_db.db"
         }
-    ]
+    ],
+    "sqltools.useNodeRuntime": true
 }
