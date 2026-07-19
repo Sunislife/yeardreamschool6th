@@ -216,3 +216,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+...
+
+# 마지막 기존 내용
+
+AI실무기본_3주차/04_머신러닝심화Ⅴ/02_민원유형텍스트분류/data/
